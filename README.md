@@ -113,6 +113,18 @@ proj4.defs can also be used to define a named alias:
 proj4.defs('urn:x-ogc:def:crs:EPSG:4326', proj4.defs('EPSG:4326'));
 ```
 
+
+## Grid Based Datum Adjustments
+
+To use `+nadgrids=` in a proj definition, first read your NTv2 `.gsb` file (e.g. from https://github.com/OSGeo/proj-datumgrid) into an ArrayBuffer, then pass it to `proj4.nadgrid`. E.g:
+
+```javascript
+const buffer = fs.readFileSync('ntv2.gsb').buffer
+proj4.nadgrid('key', buffer);
+```
+
+then use the given key in your definition, e.g. `+nadgrids=@key,null`. See [Grid Based Datum Adjustments](https://proj.org/usage/transformation.html?highlight=nadgrids#grid-based-datum-adjustments).
+
 ## TypeScript
 
 TypeScript implementation was added to the [DefinitelyTyped repository](https://github.com/DefinitelyTyped/DefinitelyTyped).

@@ -25,15 +25,15 @@ function startTests(chai, proj4, testPoints) {
       var sweref99tm = '+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs';
       var rt90 = '+lon_0=15.808277777799999 +lat_0=0.0 +k=1.0 +x_0=1500000.0 +y_0=0.0 +proj=tmerc +ellps=bessel +units=m +towgs84=414.1,41.3,603.1,-0.855,2.141,-7.023,0 +no_defs';
       var rslt = proj4(sweref99tm, rt90).forward([319180, 6399862]);
-      assert.closeTo(rslt[0], 1271137.9275601401, 0.000001);
-      assert.closeTo(rslt[1], 6404230.291459564, 0.000001);
+      assert.closeTo(rslt[0], 1271137.927561178, 0.000001);
+      assert.closeTo(rslt[1], 6404230.291456626, 0.000001);
     });
     it('should work with a proj object', function() {
       var sweref99tm = proj4('+proj=utm +zone=33 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs');
       var rt90 = proj4('+lon_0=15.808277777799999 +lat_0=0.0 +k=1.0 +x_0=1500000.0 +y_0=0.0 +proj=tmerc +ellps=bessel +units=m +towgs84=414.1,41.3,603.1,-0.855,2.141,-7.023,0 +no_defs');
       var rslt = proj4(sweref99tm, rt90).forward([319180, 6399862]);
-      assert.closeTo(rslt[0], 1271137.9275601401, 0.000001);
-      assert.closeTo(rslt[1], 6404230.291459564, 0.000001);
+      assert.closeTo(rslt[0], 1271137.927561178, 0.000001);
+      assert.closeTo(rslt[1], 6404230.291456626, 0.000001);
     });
   });
 
@@ -160,7 +160,7 @@ function startTests(chai, proj4, testPoints) {
               assert.closeTo(xy[0], testPoint.xy[0], xyEPSLN, 'x is close');
               assert.closeTo(xy[1], testPoint.xy[1], xyEPSLN, 'y is close');
             });
-            it('should work 3 element ponit object', function() {
+            it('should work 3 element point object', function() {
               var pt = proj4.toPoint(testPoint.xy);
               var ll = proj4(new proj4.Proj(testPoint.code), proj4.WGS84, pt);
               assert.closeTo(ll.x, testPoint.ll[0], llEPSLN, 'x is close');
@@ -183,8 +183,8 @@ function startTests(chai, proj4, testPoints) {
             return 'correct answer';
           }
         });
-        assert.closeTo(rslt.x, 1271137.9275601401, 0.000001);
-        assert.closeTo(rslt.y, 6404230.291459564, 0.000001);
+        assert.closeTo(rslt.x, 1271137.927561178, 0.000001);
+        assert.closeTo(rslt.y, 6404230.291456626, 0.000001);
         assert.equal(rslt.z, 0);
         assert.equal(rslt.m, 1000);
         assert.equal(rslt.method(), 'correct answer');
@@ -217,8 +217,8 @@ function startTests(chai, proj4, testPoints) {
           0,
           1000,
         ]);
-        assert.closeTo(rslt[0], 1271137.9275601401, 0.000001);
-        assert.closeTo(rslt[1], 6404230.291459564, 0.000001);
+        assert.closeTo(rslt[0], 1271137.927561178, 0.000001);
+        assert.closeTo(rslt[1], 6404230.291456626, 0.000001);
         assert.equal(rslt[2], 0);
         assert.equal(rslt[3], 1000);
       });
@@ -380,6 +380,78 @@ function startTests(chai, proj4, testPoints) {
       });
     });
 
+    describe('Nadgrids', function() {
+      var tests = [
+        [-44.382211538462, 40.3768, -44.380749, 40.377457], // just inside the lower limit
+        [-87.617788, 59.623262, -87.617659, 59.623441], // just inside the upper limit
+        [-44.5, 40.5, -44.498553, 40.500632], // inside the first square
+        [-60, 50, -59.999192, 50.000058], // a general point towards the middle of the grid
+        [0, 0, 0, 0] // fall back to null
+      ];
+
+      var converter;
+
+      function initializeNadgrid(buffer) {
+        proj4.nadgrid('ntv2', buffer);
+        proj4.defs('ntv2_from', '+proj=longlat +ellps=clrk66 +nadgrids=@ignorable,ntv2,null');
+        proj4.defs('ntv2_to', '+proj=longlat +datum=WGS84 +no_defs');
+        converter = proj4('ntv2_from', 'ntv2_to');
+      }
+
+      before(function(done) {
+        if (typeof XMLHttpRequest !== 'undefined') {
+          const xhr = new XMLHttpRequest();
+          xhr.open('GET', 'ntv2_0_downsampled.gsb', true);
+          xhr.responseType = 'arraybuffer';
+          xhr.addEventListener('load', function() {
+            initializeNadgrid(xhr.response);
+            done();
+          });
+          xhr.addEventListener('error', done);
+          xhr.send();
+        } else if (typeof require === 'function') {
+          const fs = require('fs');
+          const path = require('path');
+          fs.readFile(path.join(__dirname, 'ntv2_0_downsampled.gsb'), function(err, data) {
+            if (err) {
+              done(err);
+            } else {
+              initializeNadgrid(data.buffer);
+              done();
+            }
+          })
+        }
+      });
+
+      tests.forEach(function(test) {
+        var fromLng = test[0];
+        var fromLat = test[1];
+        var toLng = test[2];
+        var toLat = test[3];
+        it('should interpolate ' + [fromLng, fromLat] + ' to ' + [toLng, toLat], function () {
+          var actual = converter.forward([fromLng, fromLat]);
+          assert.approximately(actual[0], toLng, 0.000001);
+          assert.approximately(actual[1], toLat, 0.000001);
+        });
+      });
+
+      var inverseTests = [
+        [-44.5, 40.5, -44.498553, 40.500632],
+        [-60, 50, -59.999192, 50.000058]
+      ];
+
+      inverseTests.forEach(function(test) {
+        var fromLng = test[0];
+        var fromLat = test[1];
+        var toLng = test[2];
+        var toLat = test[3];
+        it('should inverse interpolate ' + [toLng, toLat] + ' to ' + [fromLng, fromLat], function () {
+          var actual = converter.inverse([toLng, toLat]);
+          assert.approximately(actual[0], fromLng, 0.000001);
+          assert.approximately(actual[1], fromLat, 0.000001);
+        });
+      });
+    });
   });
 }
 if(typeof process !== 'undefined'&&process.toString() === '[object process]'){
