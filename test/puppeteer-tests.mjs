@@ -10,10 +10,9 @@ const port = process.env.PORT || 8080; // use port 8080 unless there exists a pr
 const server = http.createServer(function (request, response) {
   let filePath = request.url;
 
-  if (filePath == '/') {
+  if (filePath === '/') {
     filePath = 'index.html';
-  }
-  else {
+  } else {
     filePath = './' + request.url;
   }
 
@@ -41,18 +40,16 @@ const server = http.createServer(function (request, response) {
 
   fs.readFile(filePath, function (error, content) {
     if (error) {
-      if (error.code == 'ENOENT') {
+      if (error.code === 'ENOENT') {
         fs.readFile('public/404.html', function (error, content) {
           response.writeHead(404, { 'Content-Type': 'text/html' });
           response.end(content, 'utf-8');
         });
-      }
-      else {
+      } else {
         response.writeHead(500);
         response.end('Sorry, check with the site admin for error: ' + error.code + ' ..\n');
       }
-    }
-    else {
+    } else {
       response.writeHead(200, { 'Content-Type': contentType });
       response.end(content, 'utf-8');
     }
@@ -60,56 +57,54 @@ const server = http.createServer(function (request, response) {
 });
 function timeoutPromise(timeout, callback) {
   return new Promise((resolve, reject) => {
-      // Set up the timeout
-      const timer = setTimeout(() => {
-          reject(new Error(`Promise timed out after ${timeout} ms`));
-      }, timeout);
+    // Set up the timeout
+    const timer = setTimeout(() => {
+      reject(new Error(`Promise timed out after ${timeout} ms`));
+    }, timeout);
 
-      // Set up the real work
-      callback(
-          (value) => {
-              clearTimeout(timer);
-              resolve(value);
-          },
-          (error) => {
-              clearTimeout(timer);
-              reject(error);
-          }
-      );
+    // Set up the real work
+    callback(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
   });
 }
 (async () => {
-
   server.listen(port, hostname);
 
   // Launch the browser and open a new blank page
 
-  const browser = await puppeteer.launch({ headless: "new", args: ['--no-sandbox'] });
+  const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
   const page = await browser.newPage();
 
   // Navigate the page to a URL
-  await page.goto('http://'+hostname+':'+port+'/test/opt.html');
+  await page.goto('http://' + hostname + ':' + port + '/test/opt.html');
 
   // Set screen size
   await page.setViewport({ width: 1080, height: 1024 });
 
   // Type into search box
-  const testResult = await timeoutPromise(10000, (resolve, reject) => {
-    page.on('console', consoleMessage => {
+  const testResult = await timeoutPromise(10000, (resolve) => {
+    page.on('console', (consoleMessage) => {
       if (consoleMessage.type() === 'log') {
         const res = JSON.parse(consoleMessage.text());
-        if (res.stats !== undefined){
+        if (res.stats !== undefined) {
           resolve(res.stats);
         }
       }
     });
   });
 
-  assert.strictEqual(testResult.failures, 0, "Tests: passed: " + testResult.passes + ", fail: " + testResult.failures + ", total:" + testResult.tests);
-  assert.strictEqual(testResult.tests, testResult.passes, "Tests: " + testResult.passes + "/" + testResult.tests);
-  console.log("Tests: " + testResult.passes + "/" + testResult.tests);
-  
+  assert.strictEqual(testResult.failures, 0, 'Tests: passed: ' + testResult.passes + ', fail: ' + testResult.failures + ', total:' + testResult.tests);
+  assert.strictEqual(testResult.tests, testResult.passes, 'Tests: ' + testResult.passes + '/' + testResult.tests);
+  console.log('Tests: ' + testResult.passes + '/' + testResult.tests);
+
   await browser.close();
   server.close();
 })();
-
