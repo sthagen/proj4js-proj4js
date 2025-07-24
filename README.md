@@ -176,14 +176,6 @@ await proj4.nadgrid('ca_nrc_NA83SCRS.tif', tiff).ready;
 
 Then use the given key in your definition, e.g. `proj4.defs("EPSG:32188","+proj=tmerc +lat_0=0 +lon_0=-73.5 +k=0.9999 +x_0=304800 +y_0=0 +ellps=GRS80 +nadgrids=ca_nrc_NA83SCRS.tif +units=m +no_defs +type=crs");` noting the `+nadgrids=ca_nrc_NA83SCRS.tif` parameter.
 
-## TypeScript
-
-TypeScript implementation was added to the [DefinitelyTyped repository](https://github.com/DefinitelyTyped/DefinitelyTyped).
-
-```bash
-$ npm install --save @types/proj4
-```
-
 ## Developing
 To set up build tools make sure you have node and grunt-cli installed and then run `npm install`.
 
