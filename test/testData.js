@@ -709,6 +709,15 @@ var testPoints = [
     }
   },
   {
+    code: '+proj=ortho',
+    ll: [20, 10],
+    xy: [2148527.0455346, 1100248.54773536],
+    acc: {
+      ll: 1,
+      xy: -4
+    }
+  },
+  {
     code: '+proj=ob_tran +o_proj=moll +o_lat_p=45 +o_lon_p=-90',
     ll: [-2, -1],
     xy: [-7421459.0847, -5444548.62239],
