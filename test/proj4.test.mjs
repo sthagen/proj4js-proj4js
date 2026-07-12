@@ -42,6 +42,15 @@ describe('proj2proj', function () {
     assert.closeTo(rslt[0], 1271137.927561178, 0.000001);
     assert.closeTo(rslt[1], 6404230.291456626, 0.000001);
   });
+  it('should wrap longitude into the 0..360 range with +lon_wrap', function () {
+    var wgs84 = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
+    var wrapped = '+proj=longlat +ellps=WGS84 +datum=WGS84 +lon_wrap=180 +no_defs';
+    assert.closeTo(proj4(wgs84, wrapped).forward([-170, 40])[0], 190, 0.000001);
+    assert.closeTo(proj4(wgs84, wrapped).forward([-180, 0])[0], 180, 0.000001);
+    assert.closeTo(proj4(wgs84, wrapped).forward([10, 0])[0], 10, 0.000001);
+    // without +lon_wrap the longitude stays in the -180..180 range
+    assert.closeTo(proj4(wgs84, wgs84).forward([-170, 40])[0], -170, 0.000001);
+  });
 });
 
 describe('proj4', function () {
@@ -871,6 +880,17 @@ describe('proj4', function () {
       assert.throws(function () {
         proj4(str);
       }, 'Invalid value for o_lat_1: o_lat_1 should be different from zero', 'should work');
+    });
+  });
+
+  describe('nzmg projection', function () {
+    var proj = proj4('+proj=nzmg +lat_0=-41 +lon_0=173 +x_0=2510000 +y_0=6023150 +ellps=intl +no_defs');
+    var nzmg = [2152713.585, 5442524.565];
+    it('should round trip through inverse and forward', function () {
+      var lonlat = proj.inverse(nzmg);
+      var backToNzmg = proj.forward(lonlat);
+      assert.closeTo(backToNzmg[0], nzmg[0], 1e-2, 'easting is close');
+      assert.closeTo(backToNzmg[1], nzmg[1], 1e-2, 'northing is close');
     });
   });
 });

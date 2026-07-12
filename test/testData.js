@@ -1346,6 +1346,19 @@ var testPoints = [
     ll: [2, 48],
     xy: [249325.62485355, -187277.841415147]
   }, {
+    // lon_0 omitted: defaults to 0, same result as +lon_0=0
+    code: '+proj=aeqd +lat_0=51.5 +datum=WGS84 +units=m +no_defs',
+    ll: [2, 48],
+    xy: [149325.62485313, -387277.84141508]
+  }, {
+    code: '+proj=merc +a=6378137 +b=6378137 +units=m +no_defs',
+    ll: [10, 45],
+    xy: [1113194.90793274, 5621521.48619207]
+  }, {
+    code: '+proj=lcc +lat_1=33 +lat_2=45 +lat_0=39 +datum=WGS84 +units=m +no_defs',
+    ll: [-100, 40],
+    xy: [-6880442.71344780, 4330863.47097279]
+  }, {
     code: '+proj=laea +lat_0=2 +lon_0=1 +x_0=0 +y_0=0 +a=6371000 +b=6371000  +units=m +no_defs',
     ll: [1, 2],
     xy: [0, 0]
@@ -2569,6 +2582,27 @@ var testPoints = [
     ll: [144.7074447, -37.8195261],
     xy: [3227.90322952057, 2221.20579300822],
     acc: { xy: 2, ll: 6 }
+  },
+  {
+    code: '+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +no_defs',
+    ll: [2.3488, 48.8534],
+    xy: [652216.625995756, 6861681.499969293]
+  },
+  {
+    code: '+proj=lcc +lat_1=38.43333333333333 +lat_2=37.06666666666667 +lat_0=36.5 +lon_0=-120.5 +x_0=2000000 +y_0=500000 +datum=NAD83 +units=m +no_defs',
+    ll: [-122.4194, 37.7749],
+    xy: [1830924.1853487208, 643223.5248556901]
+  },
+  {
+    code: '+proj=lcc +lat_1=45 +lat_0=45 +lon_0=0 +k_0=1 +x_0=0 +y_0=0 +ellps=GRS80 +no_defs',
+    ll: [10, 50],
+    xy: [717947.7608040672, 600982.3692868184]
+  },
+  // Polar lcc (with lat_0=-90.0)
+  {
+    code: '+proj=lcc +lat_0=-90.0 +lon_0=81.0 +lat_1=-72.66666666666674 +lat_2=-75.3333333333334 +x_0=0.0 +y_0=0.0 +ellps=GRS80 +no_defs',
+    ll: [90, -70],
+    xy: [343065.9150369169, 2254539.6570760156]
   }
 ];
 export default testPoints;
