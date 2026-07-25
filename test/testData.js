@@ -960,6 +960,11 @@ var testPoints = [
     xy: [596916.561147926957, 1128733.073948238511]
   },
   {
+    code: '+proj=utm +zone=32 +datum=carthage +units=m +no_defs',
+    ll: [10, 36],
+    xy: [590082.503079214, 3983954.003957999]
+  },
+  {
     code: 'PROJCS["S-JTSK (Ferro) / Krovak",GEOGCS["S-JTSK (Ferro)",DATUM["S_JTSK_Ferro",SPHEROID["Bessel 1841",6377397.155,299.1528128,AUTHORITY["EPSG","7004"]],AUTHORITY["EPSG","6818"]],PRIMEM["Ferro",-17.66666666666667,AUTHORITY["EPSG","8909"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4818"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],PROJECTION["Krovak"],PARAMETER["latitude_of_center",49.5],PARAMETER["longitude_of_center",42.5],PARAMETER["azimuth",30.28813972222222],PARAMETER["pseudo_standard_parallel_1",78.5],PARAMETER["scale_factor",0.9999],PARAMETER["false_easting",0],PARAMETER["false_northing",0],AUTHORITY["EPSG","2065"],AXIS["Y",WEST],AXIS["X",SOUTH]]',
     ll: [17.323583231075897, 49.39440725405376],
     xy: [-544115.474379, -1144058.330762]
@@ -1794,6 +1799,11 @@ var testPoints = [
     xy: [-868208.61, -1095793.64]
   },
   {
+    code: '+proj=krovak +lat_0=49.5 +lon_0=24.83333333333333 +alpha=30.28813972222222 +ellps=bessel +pm=greenwich +units=m +no_defs',
+    ll: [14.42, 50.08],
+    xy: [-743101.013894535, -1043898.660355862]
+  },
+  {
     code: 'PROJCRS["S-JTSK [JTSK03] / Krovak East North",BASEGEOGCRS["S-JTSK [JTSK03]",DATUM["System of the Unified Trigonometrical Cadastral Network [JTSK03]",ELLIPSOID["Bessel 1841",6377397.155,299.1528128,LENGTHUNIT["metre",1,ID["EPSG",9001]],ID["EPSG",7004]],ID["EPSG",1201]],ID["EPSG",8351]],CONVERSION["Krovak East North (Greenwich)",METHOD["Krovak (North Orientated)",ID["EPSG",1041]],PARAMETER["Latitude of projection centre",49.5000000000003,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9102]],ID["EPSG",8811]],PARAMETER["Longitude of origin",24.8333333333336,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9102]],ID["EPSG",8833]],PARAMETER["Co-latitude of cone axis",30.2881397527781,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9102]],ID["EPSG",1036]],PARAMETER["Latitude of pseudo standard parallel",78.5000000000003,ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9102]],ID["EPSG",8818]],PARAMETER["Scale factor on pseudo standard parallel",0.9999,SCALEUNIT["unity",1,ID["EPSG",9201]],ID["EPSG",8819]],PARAMETER["False easting",0,LENGTHUNIT["metre",1,ID["EPSG",9001]],ID["EPSG",8806]],PARAMETER["False northing",0,LENGTHUNIT["metre",1,ID["EPSG",9001]],ID["EPSG",8807]],ID["EPSG",5510]],CS[Cartesian,2,ID["EPSG",4499]],AXIS["Easting (X)",east],AXIS["Northing (Y)",north],LENGTHUNIT["metre",1,ID["EPSG",9001]],ID["EPSG",8353]]',
     ll: [12.806988, 49.452262],
     xy: [-868207.48, -1095791.49]
@@ -2603,6 +2613,21 @@ var testPoints = [
     code: '+proj=lcc +lat_0=-90.0 +lon_0=81.0 +lat_1=-72.66666666666674 +lat_2=-75.3333333333334 +x_0=0.0 +y_0=0.0 +ellps=GRS80 +no_defs',
     ll: [90, -70],
     xy: [343065.9150369169, 2254539.6570760156]
+  },
+  {
+    code: '+proj=vandg +R=6371000 +lon_0=0 +x_0=0 +y_0=0 +units=m +no_defs',
+    ll: [0, 45],
+    xy: [0, 5363026.34343254]
+  },
+  {
+    code: '+proj=vandg +R=6371000 +lon_0=0 +x_0=0 +y_0=0 +units=m +no_defs',
+    ll: [45, 0],
+    xy: [5003771.699005143, 0]
+  },
+  {
+    code: '+proj=merc +ellps=plessis +lon_0=0 +x_0=0 +y_0=0 +units=m +no_defs',
+    ll: [10, 50],
+    xy: [1112913.211791464, 6413002.836941121]
   }
 ];
 export default testPoints;
