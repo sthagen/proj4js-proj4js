@@ -883,6 +883,22 @@ describe('proj4', function () {
     });
   });
 
+  describe('ortho projection', function () {
+    var proj = proj4('+proj=ortho +lat_0=10 +lon_0=20 +x_0=500000 +y_0=200000 +ellps=WGS84 +units=m +no_defs');
+    it('should project the centre onto (x_0, y_0)', function () {
+      var xy = proj.forward([20, 10]);
+      assert.closeTo(xy[0], 500000, 1e-6, 'x is close to x_0');
+      assert.closeTo(xy[1], 200000, 1e-6, 'y is close to y_0');
+    });
+    it('should round trip through forward and inverse', function () {
+      var ll = [24, 13];
+      var xy = proj.forward(ll);
+      var backToLl = proj.inverse(xy);
+      assert.closeTo(backToLl[0], ll[0], 1e-9, 'longitude is close');
+      assert.closeTo(backToLl[1], ll[1], 1e-9, 'latitude is close');
+    });
+  });
+
   describe('nzmg projection', function () {
     var proj = proj4('+proj=nzmg +lat_0=-41 +lon_0=173 +x_0=2510000 +y_0=6023150 +ellps=intl +no_defs');
     var nzmg = [2152713.585, 5442524.565];
