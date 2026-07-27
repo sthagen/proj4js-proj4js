@@ -738,6 +738,11 @@ var testPoints = [
     }
   },
   {
+    code: '+proj=ortho +lat_0=10 +lon_0=20 +x_0=500000 +y_0=200000 +R=6378137 +units=m +no_defs',
+    ll: [24, 13],
+    xy: [933513.16904843, 536434.69158115]
+  },
+  {
     code: '+proj=ob_tran +o_proj=moll +o_lat_p=45 +o_lon_p=-90',
     ll: [-2, -1],
     xy: [-7421459.08469763, -5444548.62238893]
