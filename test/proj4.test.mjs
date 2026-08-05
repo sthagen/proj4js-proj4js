@@ -42,6 +42,20 @@ describe('proj2proj', function () {
     assert.closeTo(rslt[0], 1271137.927561178, 0.000001);
     assert.closeTo(rslt[1], 6404230.291456626, 0.000001);
   });
+  it('should support the latlong, latlon and lonlat aliases of longlat', function () {
+    // see https://github.com/proj4js/proj4js/issues/167
+    var grid = '+units=m +a=6371229 +b=6371229 +lon_0=265.0 +proj=lcc +lat_2=25.0 +lat_1=25.0 +lat_0=25.0';
+    ['latlong', 'latlon', 'lonlat'].forEach(function (alias) {
+      var latlong = '+proj=' + alias + ' +a=6371229 +b=6371229';
+      var xy = proj4(latlong, grid).forward([226.541, 12.19]);
+      // reference values computed with PROJ 9.5.1
+      assert.closeTo(xy[0], -4226106.996915471, 0.01, alias + ' x is close');
+      assert.closeTo(xy[1], -832698.2610175635, 0.01, alias + ' y is close');
+      var ll = proj4(latlong, grid).inverse(xy);
+      assert.closeTo(ll[0], -133.459, 0.000001, alias + ' lng is close');
+      assert.closeTo(ll[1], 12.19, 0.000001, alias + ' lat is close');
+    });
+  });
   it('should wrap longitude into the 0..360 range with +lon_wrap', function () {
     var wgs84 = '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs';
     var wrapped = '+proj=longlat +ellps=WGS84 +datum=WGS84 +lon_wrap=180 +no_defs';
