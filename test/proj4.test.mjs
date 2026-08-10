@@ -357,53 +357,70 @@ describe('proj4', function () {
     assert.closeTo(r2[2], 30, 1e-6, 'uen→uen: round-trip preserves third');
   });
 
-  it('should preserve z for projections that return new objects (omerc, robin) when enforceAxis', function () {
+  it('should preserve z for omerc when enforceAxis', function () {
     var wgs = '+proj=longlat +datum=WGS84 +axis=enu';
-    var ned_omerc = '+proj=omerc +lat_0=4 +lonc=115 +alpha=53 +k=0.99984 +x_0=590476.87 +y_0=442857.65 +gamma=53.13010235415598 +ellps=WGS84 +units=m +axis=ned';
-    var ned_robin = '+proj=robin +datum=WGS84 +units=m +axis=ned';
+    var ned = '+proj=omerc +lat_0=4 +lonc=115 +alpha=53 +k=0.99984 +x_0=590476.87 +y_0=442857.65 +gamma=53.13010235415598 +ellps=WGS84 +units=m +axis=ned';
+    var east = -14054050.368217;
+    var north = -1073220.326837;
+    var mm = 0.001;
 
-    var r1 = proj4(wgs, ned_omerc).forward({ x: 10, y: 20, z: 30 }, true);
-    assert.equal(typeof r1.z, 'number', 'omerc obj: z must be present');
-    assert.closeTo(r1.z, -30, 0.001, 'omerc obj: z negated for down axis');
+    var obj = proj4(wgs, ned).forward({ x: 10, y: 20, z: 30 }, true);
+    assert.closeTo(obj.x, north, mm, 'ned obj: x (north) is projected northing');
+    assert.closeTo(obj.y, east, mm, 'ned obj: y (east) is projected easting');
+    assert.closeTo(obj.z, -30, mm, 'ned obj: z negated for down axis');
 
-    var r2 = proj4(wgs, ned_robin).forward({ x: 10, y: 20, z: 30 }, true);
-    assert.equal(typeof r2.z, 'number', 'robin obj: z must be present');
-    assert.closeTo(r2.z, -30, 0.001, 'robin obj: z negated for down axis');
-
-    var a1 = proj4(wgs, ned_omerc).forward([10, 20, 30], true);
-    assert.equal(a1.length, 3, 'omerc array: z element present');
-    assert.closeTo(a1[2], -30, 0.001, 'omerc array: z negated for down axis');
-
-    var a2 = proj4(wgs, ned_robin).forward([10, 20, 30], true);
-    assert.equal(a2.length, 3, 'robin array: z element present');
-    assert.closeTo(a2[2], -30, 0.001, 'robin array: z negated for down axis');
+    var arr = proj4(wgs, ned).forward([10, 20, 30], true);
+    assert.equal(arr.length, 3, 'ned array: z element present');
+    assert.closeTo(arr[0], north, mm, 'ned array: first (north) is projected northing');
+    assert.closeTo(arr[1], east, mm, 'ned array: second (east) is projected easting');
+    assert.closeTo(arr[2], -30, mm, 'ned array: z negated for down axis');
 
     // +axis=uen: up component ends up in x slot; projected easting/northing go to y/z
-    var uen_omerc = ned_omerc.replace('+axis=ned', '+axis=uen');
-    var uen_r1 = proj4(wgs, uen_omerc).forward({ x: 10, y: 20, z: 30 }, true);
-    assert.equal(uen_r1.x, 30, 'omerc uen obj: x (up) is input z');
-    assert.equal(typeof uen_r1.y, 'number', 'omerc uen obj: projected y present');
-    assert.equal(typeof uen_r1.z, 'number', 'omerc uen obj: projected z present');
-
-    var uen_robin = ned_robin.replace('+axis=ned', '+axis=uen');
-    var uen_r2 = proj4(wgs, uen_robin).forward({ x: 10, y: 20, z: 30 }, true);
-    assert.equal(uen_r2.x, 30, 'robin uen obj: x (up) is input z');
-    assert.equal(typeof uen_r2.y, 'number', 'robin uen obj: projected y present');
-    assert.equal(typeof uen_r2.z, 'number', 'robin uen obj: projected z present');
+    var uen = proj4(wgs, ned.replace('+axis=ned', '+axis=uen')).forward({ x: 10, y: 20, z: 30 }, true);
+    assert.equal(uen.x, 30, 'uen obj: x (up) is input z');
+    assert.closeTo(uen.y, east, mm, 'uen obj: y (east) is projected easting');
+    assert.closeTo(uen.z, north, mm, 'uen obj: z (north) is projected northing');
 
     // m passthrough via the raw projection (bypasses transform pipeline)
-    var rawOmerc = new proj4.Proj(ned_omerc.replace('+axis=ned', ''));
-    var rawRobin = new proj4.Proj(ned_robin.replace('+axis=ned', ''));
-    assert.equal(rawOmerc.forward({ x: 0.1, y: 0.3, z: 30, m: 7 }).m, 7, 'omerc raw forward: m preserved');
-    assert.equal(rawRobin.forward({ x: 0.1, y: 0.3, z: 30, m: 7 }).m, 7, 'robin raw forward: m preserved');
-    assert.equal(rawRobin.forward({ x: 0.1, y: 0.3, z: 30, m: 7 }).z, 30, 'robin raw forward: z preserved');
+    var raw = new proj4.Proj(ned.replace('+axis=ned', ''));
+    assert.equal(raw.forward({ x: 0.1, y: 0.3, z: 30, m: 7 }).m, 7, 'raw forward: m preserved');
+  });
+
+  it('should preserve z for robin when enforceAxis', function () {
+    var wgs = '+proj=longlat +datum=WGS84 +axis=enu';
+    var ned = '+proj=robin +datum=WGS84 +units=m +axis=ned';
+    var east = 927951.663784;
+    var north = 2139038.321986;
+    var cm = 0.1;
+
+    var obj = proj4(wgs, ned).forward({ x: 10, y: 20, z: 30 }, true);
+    assert.closeTo(obj.x, north, cm, 'ned obj: x (north) is projected northing');
+    assert.closeTo(obj.y, east, cm, 'ned obj: y (east) is projected easting');
+    assert.closeTo(obj.z, -30, cm, 'ned obj: z negated for down axis');
+
+    var arr = proj4(wgs, ned).forward([10, 20, 30], true);
+    assert.equal(arr.length, 3, 'ned array: z element present');
+    assert.closeTo(arr[0], north, cm, 'ned array: first (north) is projected northing');
+    assert.closeTo(arr[1], east, cm, 'ned array: second (east) is projected easting');
+    assert.closeTo(arr[2], -30, cm, 'ned array: z negated for down axis');
+
+    // +axis=uen: up component ends up in x slot; projected easting/northing go to y/z
+    var uen = proj4(wgs, ned.replace('+axis=ned', '+axis=uen')).forward({ x: 10, y: 20, z: 30 }, true);
+    assert.equal(uen.x, 30, 'uen obj: x (up) is input z');
+    assert.closeTo(uen.y, east, cm, 'uen obj: y (east) is projected easting');
+    assert.closeTo(uen.z, north, cm, 'uen obj: z (north) is projected northing');
+
+    // m passthrough via the raw projection (bypasses transform pipeline)
+    var raw = new proj4.Proj(ned.replace('+axis=ned', ''));
+    assert.equal(raw.forward({ x: 0.1, y: 0.3, z: 30, m: 7 }).m, 7, 'raw forward: m preserved');
+    assert.equal(raw.forward({ x: 0.1, y: 0.3, z: 30, m: 7 }).z, 30, 'raw forward: z preserved');
 
     // ob_tran wrapping robin with a permuting axis
-    var ob_tran_robin_uen = '+proj=ob_tran +o_proj=robin +o_lat_p=45 +o_lon_p=0 +lon_0=0 +ellps=WGS84 +axis=uen';
-    var ob1 = proj4(wgs, ob_tran_robin_uen).forward({ x: 10, y: 20, z: 30 }, true);
-    assert.equal(ob1.x, 30, 'ob_tran(robin) uen: x (up) is input z');
-    assert.equal(typeof ob1.y, 'number', 'ob_tran(robin) uen: projected y present');
-    assert.equal(typeof ob1.z, 'number', 'ob_tran(robin) uen: projected z present');
+    var ob_tran_uen = '+proj=ob_tran +o_proj=robin +o_lat_p=45 +o_lon_p=0 +lon_0=0 +ellps=WGS84 +axis=uen';
+    var ob = proj4(wgs, ob_tran_uen).forward({ x: 10, y: 20, z: 30 }, true);
+    assert.equal(ob.x, 30, 'ob_tran(robin) uen: x (up) is input z');
+    assert.closeTo(ob.y, 949879.671421, cm, 'ob_tran(robin) uen: y (east) is projected easting');
+    assert.closeTo(ob.z, -2605721.940984, cm, 'ob_tran(robin) uen: z (north) is projected northing');
   });
 
   it('axes should be invertable with proj4.transform()', function () {
