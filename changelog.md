@@ -1,5 +1,6 @@
 ## Change log
 
+- 2.22.0: Support latlong, latlon and lonlat as aliases of longlat; preserve z when enforceAxis=true for omerc and robin; apply false easting in ortho projections
 - 2.21.0: Add support for `+lon_wrap`
 - 2.20.9: Add Eckert VI (eck6) projection; add geotiff@3 support (geotiff is now an optional peer dependency); fix unknown datum handling to match PROJ behavior; fix gamma without alpha in omerc; fix ob_tran lam offset and +over handling; fix enforceAxis for z and arbitrary axis orders
 
